@@ -178,7 +178,15 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_secur_TC_standard_distributed_key_set(secret_zll_trust_center_key);
 
     esp_zb_color_dimmable_light_cfg_t light_cfg = ESP_ZB_DEFAULT_COLOR_DIMMABLE_LIGHT_CONFIG();
-    esp_zb_ep_list_t *esp_zb_color_dimmable_light_ep = esp_zb_color_dimmable_light_ep_create(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT, &light_cfg);
+    esp_zb_ep_list_t *esp_zb_color_dimmable_light_ep = NULL;
+    esp_zb_color_dimmable_light_ep = esp_zb_ep_list_create();
+    esp_zb_endpoint_config_t endpoint_config = {
+        .endpoint = HA_COLOR_DIMMABLE_LIGHT_ENDPOINT,
+        .app_profile_id = ESP_ZB_AF_HA_PROFILE_ID,
+        .app_device_id = 0x0102,
+        .app_device_version = 1, // maybe important for Hue? Oh HELL yes.
+    };
+    esp_zb_ep_list_add_ep(esp_zb_color_dimmable_light_ep, esp_zb_color_dimmable_light_clusters_create(&light_cfg), endpoint_config);
     zcl_basic_manufacturer_info_t info = {
         .manufacturer_name = ESP_MANUFACTURER_NAME,
         .model_identifier = ESP_MODEL_IDENTIFIER,
