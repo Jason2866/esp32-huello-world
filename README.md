@@ -14,3 +14,9 @@ To compile:
 ``` sh
 ./in-docker.sh idf.py set-target esp32-c6 build
 ```
+
+To clean up:
+
+``` sh
+./in-docker.sh rm -rf build dependencies.lock managed_components/ sdkconfig
+```
