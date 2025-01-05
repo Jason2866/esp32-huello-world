@@ -167,6 +167,16 @@ static void esp_zb_task(void *pvParameters)
     /* initialize Zigbee stack */
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZR_CONFIG();
     esp_zb_init(&zb_nwk_cfg);
+
+    // allow joining the Philips Hue network(s)
+    esp_zb_enable_joining_to_distributed(true);
+    uint8_t secret_zll_trust_center_key[] = {
+        // FIXME: this is not the correct key, replace it with the proper one
+        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
+    };
+    esp_zb_secur_TC_standard_distributed_key_set(secret_zll_trust_center_key);
+
     esp_zb_color_dimmable_light_cfg_t light_cfg = ESP_ZB_DEFAULT_COLOR_DIMMABLE_LIGHT_CONFIG();
     esp_zb_ep_list_t *esp_zb_color_dimmable_light_ep = esp_zb_color_dimmable_light_ep_create(HA_COLOR_DIMMABLE_LIGHT_ENDPOINT, &light_cfg);
     zcl_basic_manufacturer_info_t info = {

@@ -4,7 +4,8 @@ This is Espressif's [HA_color_dimmable_light](https://github.com/espressif/esp-z
 **that will be**
 adjusted to successfully link against Hue bridge.
 
-Mind you, you'll need to adjust the trust center key.
+Mind you, you'll need to adjust the trust center link key
+(heed the `FIXME` in `main/esp_zb_light.c`).
 
 Details in my [Zigbee: Hue-llo world!](https://wejn.org/2025/01/zigbee-hue-llo-world/)
 blog post.
