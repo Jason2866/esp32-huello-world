@@ -84,6 +84,21 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
             }
         }
         break;
+    case ESP_ZB_ZDO_SIGNAL_LEAVE:
+        // https://github.com/espressif/esp-zigbee-sdk/issues/66#issuecomment-1667314481
+        esp_zb_zdo_signal_leave_params_t *leave_params = (esp_zb_zdo_signal_leave_params_t *)esp_zb_app_signal_get_params(p_sg_p);
+        if (leave_params) {
+            if (leave_params->leave_type == ESP_ZB_NWK_LEAVE_TYPE_RESET) {
+                ESP_LOGI(TAG, "ZDO leave: with reset, status: %s", esp_err_to_name(err_status));
+                esp_zb_nvram_erase_at_start(true); // erase previous network information.
+                esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING); // steering a new network.
+            } else {
+                ESP_LOGI(TAG, "ZDO leave: leave_type: %d, status: %s", leave_params->leave_type, esp_err_to_name(err_status));
+            }
+        } else {
+            ESP_LOGI(TAG, "ZDO leave: (no params), status: %s", esp_err_to_name(err_status));
+        }
+        break;
     default:
         ESP_LOGI(TAG, "ZDO signal: %s (0x%x), status: %s", esp_zb_zdo_signal_to_string(sig_type), sig_type, esp_err_to_name(err_status));
         break;
