@@ -21,3 +21,11 @@ To clean up:
 ``` sh
 ./in-docker.sh rm -rf build dependencies.lock managed_components/ sdkconfig
 ```
+
+To change your board's MAC (or other ZB parameters):
+
+``` sh
+./in-docker.sh python3 esp_zb_mfg_tool.py -m CAFEBEEF50C0FFA0 \
+  -c 0x07FFF800 -mn Espressif -mc 0x131B
+esptool.py write_flash 0x1d8000 ./bin/CAFEBEEF50C0FFA0.bin
+```
