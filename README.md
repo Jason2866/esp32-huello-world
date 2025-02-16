@@ -25,7 +25,13 @@ To clean up:
 To change your board's MAC (or other ZB parameters):
 
 ``` sh
-./in-docker.sh python3 esp_zb_mfg_tool.py -m CAFEBEEF50C0FFA0 \
-  -c 0x07FFF800 -mn Espressif -mc 0x131B
+./in-docker.sh python3 esp_zb_mfg_tool.py \
+  --manufacturer_name Espressif --manufacturer_code 0x131B \
+  --channel_mask 0x07FFF800 \
+  --mac_address CAFEBEEF50C0FFA0
 esptool.py write_flash 0x1d8000 ./bin/CAFEBEEF50C0FFA0.bin
 ```
+
+Note: `0x1d8000` is the location of your `zb_fct` in `partitions.csv`.
+And the other possible parameters (for `esp_zb_mfg_tool`) can be figured
+out easily from its source.
