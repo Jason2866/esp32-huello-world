@@ -10,6 +10,11 @@ Mind you, you'll need to adjust the trust center link key
 Details in my [Zigbee: Hue-llo world!](https://wejn.org/2025/01/zigbee-hue-llo-world/)
 blog post.
 
+And if you want a firmware that's a bit more full-featured,
+then check out [Introducing e32: firmware for esp32-c6 based White Ambiance
+light](https://wejn.org/2025/03/introducing-e32wamb-firmware-for-esp32-c6-based-white-ambiance/)
+post and the associated [wejn/e32wamb](https://github.com/wejn/e32wamb/) repo.
+
 To compile:
 
 ``` sh
