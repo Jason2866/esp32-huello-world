@@ -186,9 +186,9 @@ static void esp_zb_task(void *pvParameters)
     // allow joining the Philips Hue network(s)
     esp_zb_enable_joining_to_distributed(true);
     uint8_t secret_zll_trust_center_key[] = {
-        // FIXME: this is not the correct key, replace it with the proper one
-        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-        0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
+        // Should be the needed key
+        0x81, 0x42, 0x86, 0x86, 0x5D, 0xC1, 0xC8, 0xB2,
+        0xC8, 0xCB, 0xC5, 0x2E, 0x5D, 0x65, 0xD1, 0xB8
     };
     esp_zb_secur_TC_standard_distributed_key_set(secret_zll_trust_center_key);
 
