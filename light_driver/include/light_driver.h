@@ -27,8 +27,8 @@ extern "C" {
 #define LIGHT_DEFAULT_OFF 0
 
 /* LED strip configuration */
-#define CONFIG_EXAMPLE_STRIP_LED_GPIO   8
-#define CONFIG_EXAMPLE_STRIP_LED_NUMBER 1
+#define CONFIG_EXAMPLE_STRIP_LED_GPIO   18
+#define CONFIG_EXAMPLE_STRIP_LED_NUMBER 10
 
 
 /** Convert Hue,Saturation,V to RGB
@@ -64,6 +64,40 @@ extern "C" {
   }                                             \
 }
 
+#define HSV_to_RGBW(h, s, v, r, g, b, w)                                      \
+{                                                                             \
+    uint8_t i;                                                                \
+    uint8_t sector = UINT8_MAX / 6;                                           \
+    float f, p, q, t;                                                         \
+                                                                              \
+    if (s == 0) { /* achromatic (grey) */                                     \
+        r = g = b = 0;  /* Set RGB to 0 for pure white */                     \
+        w = v;          /* Set White to the value (brightness) */            \
+    } else {                                                                  \
+        i = h / sector;       /* sector 0 to 5 */                             \
+        f = (float)(h % sector) / (float)sector;      /* factorial part of h, normalized */ \
+        p = (float)v * (1.0f - (float)s / UINT8_MAX);                           \
+        q = (float)v * (1.0f - (float)s / UINT8_MAX * f);                       \
+        t = (float)v * (1.0f - (float)s / UINT8_MAX * (1.0f - f));                \
+                                                                              \
+        switch (i) {                                                          \
+            case 0: r = v; g = t; b = p; break;                               \
+            case 1: r = q; g = v; b = p; break;                               \
+            case 2: r = p; g = v; b = t; break;                               \
+            case 3: r = p; g = q; b = v; break;                               \
+            case 4: r = t; g = p; b = v; break;                               \
+            case 5:                                                           \
+            default: r = v; g = p; b = q; break;                               \
+        }                                                                     \
+                                                                             \
+        /* Method 3: Luminance-based (more accurate, but more complex)*/    \
+        w = 0.299f * r + 0.587f * g + 0.114f * b;                             \
+        r -= w;                                                               \
+        g -= w;                                                               \
+        b -= w;                                                               \
+    }                                                                         \
+}
+
 #define XYZ_to_RGB(X, Y, Z, r, g, b)                        \
 {                                                           \
   r = (float)( 3.240479*(X) -1.537150*(Y) -0.498535*(Z));   \
@@ -72,6 +106,27 @@ extern "C" {
   if(r>1){r=1;}                                             \
   if(g>1){g=1;}                                             \
   if(b>1){b=1;}                                             \
+  if(w>1){w=1;}                                             \
+}
+
+#define XYZ_to_RGBW(X, Y, Z, r, g, b, w)                    \ 
+{                                                           \
+  r = (float)( 3.240479*(X) -1.537150*(Y) -0.498535*(Z));   \
+  g = (float)(-0.969256*(X) +1.875992*(Y) +0.041556*(Z));   \
+  b = (float)( 0.055648*(X) -0.204043*(Y) +1.057311*(Z));   \
+  w = 0.299 * r + 0.587 * g + 0.114 * b;                    \
+                                                            \
+  r -= w;                                                   \
+  g -= w;                                                   \
+  b -= w;                                                   \
+  if(r>1){r=1;}                                             \
+  if(g>1){g=1;}                                             \
+  if(b>1){b=1;}                                             \
+  if(w>1){w=1;}                                             \
+  if (r < 0.0) { r = 0.0; }                                 \
+  if (g < 0.0) { g = 0.0; }                                 \
+  if (b < 0.0) { b = 0.0; }                                 \
+  if (w < 0.0) { w = 0.0; }                                 \
 }
 
 /**

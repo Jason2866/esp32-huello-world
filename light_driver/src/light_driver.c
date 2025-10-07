@@ -18,35 +18,37 @@
 #include "light_driver.h"
 
 static led_strip_handle_t s_led_strip;
-static uint8_t s_red = 255, s_green = 255, s_blue = 255, s_level = 255;
+static uint8_t s_red = 255, s_green = 255, s_blue = 255, s_white = 255, s_level = 255;
 
 void light_driver_set_color_xy(uint16_t color_current_x, uint16_t color_current_y)
 {
-    float red_f = 0, green_f = 0, blue_f = 0, color_x, color_y;
+    float red_f = 0, green_f = 0, blue_f = 0, white_f = 0, color_x, color_y;
     color_x = (float)color_current_x / 65535;
     color_y = (float)color_current_y / 65535;
     /* assume color_Y is full light level value 1  (0-1.0) */
     float color_X = color_x / color_y;
     float color_Z = (1 - color_x - color_y) / color_y;
     /* change from xy to linear RGB NOT sRGB */
-    XYZ_to_RGB(color_X, 1, color_Z, red_f, green_f, blue_f);
+    XYZ_to_RGBW(color_X, 1, color_Z, red_f, green_f, blue_f, white_f);
     float ratio = (float)s_level / 255;
     s_red = (uint8_t)(red_f * (float)255);
     s_green = (uint8_t)(green_f * (float)255);
     s_blue = (uint8_t)(blue_f * (float)255);
-    ESP_ERROR_CHECK(led_strip_set_pixel(s_led_strip, 0, s_green * ratio, s_red * ratio, s_blue * ratio));
+    s_white = (uint8_t)(white_f * (float)255);
+    ESP_ERROR_CHECK(led_strip_set_pixel_rgbw(s_led_strip, 0, s_green * ratio, s_red * ratio, s_blue * ratio, s_white * ratio));
     ESP_ERROR_CHECK(led_strip_refresh(s_led_strip));
 }
 
 void light_driver_set_color_hue_sat(uint8_t hue, uint8_t sat)
 {
-    float red_f, green_f, blue_f;
-    HSV_to_RGB(hue, sat, UINT8_MAX, red_f, green_f, blue_f);
+    float red_f, green_f, blue_f, white_f;
+    HSV_to_RGBW(hue, sat, UINT8_MAX, red_f, green_f, blue_f, white_f);
     float ratio = (float)s_level / 255;
     s_red = (uint8_t)red_f;
     s_green = (uint8_t)green_f;
     s_blue = (uint8_t)blue_f;
-    ESP_ERROR_CHECK(led_strip_set_pixel(s_led_strip, 0, s_green * ratio, s_red * ratio, s_blue * ratio));
+    s_white = (uint8_t)white_f;
+    ESP_ERROR_CHECK(led_strip_set_pixel_rgbw(s_led_strip, 0, s_green * ratio, s_red * ratio, s_blue * ratio, s_white * ratio));
     ESP_ERROR_CHECK(led_strip_refresh(s_led_strip));
 }
 
@@ -79,6 +81,11 @@ void light_driver_init(bool power)
     led_strip_config_t led_strip_conf = {
         .max_leds = CONFIG_EXAMPLE_STRIP_LED_NUMBER,
         .strip_gpio_num = CONFIG_EXAMPLE_STRIP_LED_GPIO,
+        .led_model = LED_MODEL_SK6812,        // LED strip model
+        .color_component_format = (led_color_component_format_t){.format = {.r_pos = 2, .g_pos = 1, .b_pos = 3, .w_pos = 0, .reserved = 0, .num_components = 4}},
+        .flags = {
+            .invert_out = false, // don't invert the output signal
+        }
     };
     led_strip_rmt_config_t rmt_conf = {
         .resolution_hz = 10 * 1000 * 1000, // 10MHz
