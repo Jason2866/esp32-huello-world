@@ -1,8 +1,0 @@
-{
-    "idf.pythonInstallPath": "/usr/local/bin/python3",
-    "idf.port": "/dev/tty.usbmodem141401",
-    "files.associations": {
-        "led_strip.h": "c",
-        "led_strip_interface.h": "c"
-    }
-}
